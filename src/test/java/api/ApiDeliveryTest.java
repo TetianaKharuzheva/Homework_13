@@ -11,13 +11,14 @@ public class ApiDeliveryTest {
     public static final String BASE_PATH = "/test-orders/";
 
     // Homework_10
-
+    //PUT
     @Test
     public void changeOrderDetails() {
         RestAssured
                 .given()
                 .log()
                 .all()
+                .header("api_key", "1111222233334444")
                 .put(BASE_URL + BASE_PATH + "10")
                 .then()
                 .log()
@@ -25,7 +26,7 @@ public class ApiDeliveryTest {
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK);
     }
-
+    // DELETE
     @Test
     public void deleteOrderId() {
         RestAssured
@@ -40,8 +41,25 @@ public class ApiDeliveryTest {
                 .assertThat()
                 .statusCode(HttpStatus.SC_NO_CONTENT);
     }
+    // GET with query params
+    @Test
+    public void authenticateUser() {
+        RestAssured
+                .given()
+                .queryParam("username", "Tata")
+                .queryParam("password", "123456")
+                .log()
+                .all()
+                .get(BASE_URL + BASE_PATH )
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
+    }
 
     // Lesson_10
+
     @Test
     public void checkOrderDetailsWithCorrectOrderId() {
         RestAssured
