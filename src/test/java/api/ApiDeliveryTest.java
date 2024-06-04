@@ -10,6 +10,38 @@ public class ApiDeliveryTest {
     public static final String BASE_URL = "https://backend.tallinn-learning.ee";
     public static final String BASE_PATH = "/test-orders/";
 
+    // Homework_10
+
+    @Test
+    public void changeOrderDetails() {
+        RestAssured
+                .given()
+                .log()
+                .all()
+                .put(BASE_URL + BASE_PATH + "10")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
+    }
+
+    @Test
+    public void deleteOrderId() {
+        RestAssured
+                .given()
+                .log()
+                .all()
+                .header("api_key", "3333114455667788")
+                .delete(BASE_URL + BASE_PATH + "4")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_NO_CONTENT);
+    }
+
+    // Lesson_10
     @Test
     public void checkOrderDetailsWithCorrectOrderId() {
         RestAssured
