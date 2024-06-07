@@ -7,8 +7,10 @@ import io.restassured.http.ContentType;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import utils.TestDataGenerator;
+import utils.TestFakerGenerator;
 
 public class ApiDeliveryTest {
     public static final String BASE_URL = "https://backend.tallinn-learning.ee";
@@ -31,8 +33,9 @@ public class ApiDeliveryTest {
                 .statusCode(HttpStatus.SC_OK);
     }
 
-    // DELETE _problem
+    // DELETE _is OK
     @Test
+    //@RepeatedTest(5)
     public void deleteOrderId() {
         RestAssured
                 .given()
@@ -207,10 +210,11 @@ public class ApiDeliveryTest {
         Assertions.assertEquals("Incorrect query", responseBody);
     }
 
+    // Lesson_11
     @Test
     public void createOrderWithDtoPattern() {
         // order creation
-        TestOrderDto orderDtoRequest = new TestOrderDto("tata","223344","Hello");
+        TestOrderDto orderDtoRequest = new TestOrderDto("tata", "223344", "Hello");
         // serialization from java to json
         String requestBodyAsJson = new Gson().toJson(orderDtoRequest);
         RestAssured
@@ -234,7 +238,7 @@ public class ApiDeliveryTest {
         orderDtoRequest.setComment("Hello");
         orderDtoRequest.setCustomerName("Tata");
         orderDtoRequest.setCustomerPhone("223344");
-                // serialization from java to json
+        // serialization from java to json
         String requestBodyAsJson = new Gson().toJson(orderDtoRequest);
         RestAssured
                 .given()
@@ -274,6 +278,28 @@ public class ApiDeliveryTest {
                 .all()
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK);
+
     }
 
+    // Homework_11
+    @Test
+    public void createOrderWithDtoPatternHalfRandomValuesHalfFakerValues() {
+        TestOrderDto orderDtoRequest = new TestOrderDto();
+        orderDtoRequest.setComment(TestDataGenerator.generateRandomComment());
+        orderDtoRequest.setCustomerName(TestFakerGenerator.fakerCustomerName());
+        orderDtoRequest.setCustomerPhone(TestFakerGenerator.fakerCustomerPhone());
+        String requestBodyAsJson = new Gson().toJson(orderDtoRequest);
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .body(requestBodyAsJson)
+                .log()
+                .all()
+                .post(BASE_URL + BASE_PATH)
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
+    }
 }

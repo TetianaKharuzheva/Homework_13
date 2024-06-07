@@ -8,7 +8,7 @@ public class TestOrderDto {
     String comment;
     long id;
 
-    public TestOrderDto( String customerName, String customerPhone, String comment) {
+    public TestOrderDto(String customerName, String customerPhone, String comment) {
         this.status = "OPEN";
         this.courierID = 0;
         this.customerName = customerName;
