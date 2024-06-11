@@ -4,11 +4,13 @@ import com.google.gson.Gson;
 import dto.TestOrderDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import specs.RequestSpecOrders;
 import utils.TestDataGenerator;
 import utils.TestFakerGenerator;
 
@@ -17,7 +19,7 @@ public class ApiDeliveryTest {
     public static final String BASE_PATH = "/test-orders/";
 
     // Homework_10
-    //PUT _problem
+    //PUT _is ok
     @Test
     public void changeOrderDetails() {
         RestAssured
@@ -302,4 +304,71 @@ public class ApiDeliveryTest {
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK);
     }
+
+     //Lesson_12
+
+    @Test
+    public void createOrderWithDSpec() {
+
+        TestOrderDto orderDtoRequest = new TestOrderDto();
+
+        orderDtoRequest.setComment(TestDataGenerator.generateRandomComment());
+        orderDtoRequest.setCustomerName(TestDataGenerator.generateRandomCustomerName());
+        orderDtoRequest.setCustomerPhone(TestDataGenerator.generateRandomCustomerPhone());
+
+        String requestBodyAsJson = new Gson().toJson(orderDtoRequest);
+        RestAssured
+                .given()
+                .spec(RequestSpecOrders.getSpec())
+                .body(requestBodyAsJson)
+                .log()
+                .all()
+                .post(BASE_URL + BASE_PATH)
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
+
+    }
+
+    @Test
+    public void checkOrderResponseBody() {
+        String requestBodyUglyWay = "{\n" +
+                "  \"status\": \"OPEN\",\n" +
+                "  \"courierId\": 0,\n" +
+                "  \"customerName\": \"Tata\",\n" +
+                "  \"customerPhone\": \"11223344\",\n" +
+                "  \"comment\": \"hello\",\n" +
+                "  \"id\": 0\n" +
+                "} ";
+        Gson gson= new Gson();
+
+
+        Response responseBody = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .body(requestBodyUglyWay)
+                .log()
+                .all()
+                .post(BASE_URL + BASE_PATH)
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
+                .and()
+                .extract()
+                .response();
+        // Transformation from Json to Java object of order dto class
+        TestOrderDto order = gson.fromJson(responseBody.asString(),TestOrderDto.class);
+        Assertions.assertEquals("OPEN", order.getStatus());
+        Assertions.assertEquals("Tata", order.getCustomerName());
+        Assertions.assertEquals("11223344", order.getCustomerPhone());
+        Assertions.assertEquals("hello", order.getComment());
+        Assertions.assertNotNull( order.getId());
+
+    }
+
+
 }
